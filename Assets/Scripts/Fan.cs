@@ -13,27 +13,36 @@ public class Fan : MonoBehaviour
 
     private GameObject player; // Reference to the player object
 
+    private Animator animator;
+    private ParticleSystem particles;
+    private bool IsFanOn = false;
+
     void Start()
     {
         // Find the player by tag (assuming the player has the "Player" tag)
         player = GameObject.FindGameObjectWithTag("Player");
+        animator = GetComponent<Animator>();
+        particles = GetComponentInChildren<ParticleSystem>();
         direction = transform.right;
-        Debug.Log(transform.right);
     }
-    void FixedUpdate(){
-        if (Input.GetKey(activationKey) != OnByDefault){
-            GetComponent<SpriteRenderer>().color = Color.white;
+    void Update(){
+        IsFanOn = Input.GetKey(activationKey) != OnByDefault;
+        animator.SetBool("IsFanOn", IsFanOn);
+        
+        if (IsFanOn){
+            //particles.gameObject.SetActive(true); // Activates the system
+            if(!particles.isPlaying) particles.Play(); // Plays the particle
         }
-        else {
-            GetComponent<SpriteRenderer>().color = Color.black;
+        else{
+           // particles.gameObject.SetActive(false); // Activates the system
+            if(particles.isPlaying) particles.Stop(); // Plays the particle
         }
     }
     private void OnTriggerStay2D(Collider2D other)
     {
         // Only apply force if the activation key is pressed
-        if (Input.GetKey(activationKey) != OnByDefault)
+        if (IsFanOn)
         {
-            GetComponent<SpriteRenderer>().color = Color.green;
             // Check if the object has a Rigidbody2D component
             Rigidbody2D rb = other.GetComponent<Rigidbody2D>();
             if (rb != null && player != null)
@@ -53,9 +62,6 @@ public class Fan : MonoBehaviour
                     rb.AddForce(Vector2.up * force * 0.2f);
                 }
             }
-        }
-        else {
-            GetComponent<SpriteRenderer>().color = Color.red;
         }
     }
 

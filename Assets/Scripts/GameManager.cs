@@ -7,7 +7,7 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
-
+    [SerializeField] private AudioSource OnOffSwitchAudio;
     public TextMeshProUGUI timerText; // Reference to the TextMeshPro text
     public TextMeshProUGUI finalText; // Reference to the TextMeshPro text
     public GameObject Dim; //Dim Screen Panel
@@ -23,6 +23,7 @@ public class GameManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        OnOffSwitchAudio = GetComponent<AudioSource>();
         textRectTransform = finalText.rectTransform;
         GameIsActive = true;
         Dim.SetActive(false);
@@ -40,8 +41,16 @@ public class GameManager : MonoBehaviour
         if (GameIsActive){
             DisplayTime(timeElapsed);
             Reset();
+            //Handle Audio
+            if (Input.GetKeyDown(KeyCode.Space)){
+                OnOffSwitchAudio.Play(0);
+            }
+            if (Input.GetKeyUp(KeyCode.Space)){
+                OnOffSwitchAudio.Play(0);
+            }
         }
         NextLevel();
+        
     }
     void DisplayTime(float timeToDisplay)
     {
